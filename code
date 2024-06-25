@@ -1,0 +1,40 @@
+#include<Wire.h>
+#include<Liquidcrystal_I2C.h>
+#include"HX711.h"
+//pin definition
+const float loadcell_dout_pin = 4;
+const float loadcell_sck_pin = 5;
+// HX711 initialization
+HX711 scale;
+// initialization the LCD, set the LCD address to 0x27 for a 16 chars and 2 line display
+LoquidCrystal_I2C lcd(0x27,16,2);
+void setup(){
+  // initialization serial communication
+  Serial.begin(9600);
+  // initialize the HX711
+  scal.begin(loadcell_dout_pin, loadcell_sck_pin);
+  // set the scale calibration factor (you'll need to adjust this value)
+  scale.set_scale(2280.f);// adjust to this calibration factor to your load cell known weight/(raw value with weight-raw value without weight)
+// tare the weight to start at 0
+scal.tare();
+// intialize the lcd
+lcd.begin();
+lcd.backlight();
+lcd.setCursor(0,0);
+lcd.print("weight scale")
+}
+void loop(){
+  // read weight from HX711
+  float weight = scale.get_units(10);//get average of 10 readings
+
+// print weight to serial monitor
+serial.print("weight:")
+serial.print(weight);
+serial.println("kg");
+//print weight to lcd
+lcd.setCursor(0,1);
+lcd.print(weight);
+lcd.print("kg");
+//add delay to allow lcd to refresh
+delay(500);
+}
